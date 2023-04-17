@@ -3,7 +3,7 @@ const config = {
 	server: {
 		path: '', // If not specified then application will use default /local/data
 		hostname: 'localhost',
-		port: 8000,
+		port: 8001,
 	},
 	// Client application
 	app: {

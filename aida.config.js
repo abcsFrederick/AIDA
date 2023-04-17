@@ -5,7 +5,7 @@ const config = {
     server: {
         path: '',
         hostname: 'localhost',
-        port: 8000,
+        port: 8001,
     },
     // Client application
     app: {

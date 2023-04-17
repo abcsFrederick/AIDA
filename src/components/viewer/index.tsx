@@ -77,6 +77,7 @@ const Viewer = (props: {
 				// following TileUrlFunction. A shame this can't be provided to the
 				// Zoomify source constructor at initialisation time.
 				tileSource.setTileUrlFunction((tileCoord) => {
+					console.log(tileCoord)
 					return templateUrl
 						.replace('{z}', (tileCoord[0] + offset).toString())
 						.replace('{x}', tileCoord[1].toString())
@@ -102,6 +103,66 @@ const Viewer = (props: {
 			}
 			// Otherwise, we assume we're dealing with a IIIF image server.
 			// Likely .tiff.
+			else if (imageExt === 'tif' || imageExt === 'svs') {
+				const imageName = imageUrl.split('/').reverse()[0];
+				const response = await fetch(`http://localhost:8000/info/${imageName}`)
+				// const info = await parseDzi(await response.text())
+				const info = JSON.parse(await response.text())
+				// Maps always need a projection, but image are not geo-referenced, and
+				// are only measured in pixels.  So, we create a fake projection that the
+				// map can use to properly display the layer. Not sure how
+				// meaningful this is but seems like good practice.
+				// NOTE: the axes orientation is origin top, left with positive Y up.
+				//       therefore need to take care with the sign of the y-axis.
+				const projection = new Proj({
+					code: 'ZOOMIFY',
+					units: 'pixels',
+					extent: [0, info.sizeY, info.sizeX, 0],
+				})
+
+				const templateUrl = `http://localhost:8000/viewer/${imageName}/{z}/{x}_{y}.jpeg`
+				const tileSource = new Zoomify({
+					// projection,
+					url: templateUrl,
+					size: [info.sizeX, info.sizeY],
+					tileSize: info.tileWidth,
+					// crossOrigin: 'anonymous',
+  					// zDirection: -1
+				})
+				// We're using the Zoomify source but .dzi will have an offset that we
+				// need to account for.
+				const offset = 0 //Math.ceil(Math.log(info.tileWidth) / Math.LN2)
+
+				// The Zoomify source we are using expects a {TileGroup} variable. We
+				// are adapting it to work with .dzi by adjusting the setTileUrlFunction.
+				// However, there will be a single 404 request. This is because the
+				// tileSource has already attempted to load before we can specify the
+				// following TileUrlFunction. A shame this can't be provided to the
+				// Zoomify source constructor at initialisation time.
+				tileSource.setTileUrlFunction((tileCoord) => {
+					return templateUrl
+						.replace('{z}', (tileCoord[0] + offset).toString())
+						.replace('{x}', tileCoord[1].toString())
+						.replace('{y}', tileCoord[2].toString())
+				})
+
+				const tileLayer = new TileLayer({ source: tileSource })
+				tileLayer.set('id', 'image')
+				tileLayer.set('type', 'image')
+				map.addLayer(tileLayer)
+
+				const tileGrid = tileSource.getTileGrid()
+
+				// VIEW ------------------------------------------------------------------
+				const view = new View({
+					center: [info.sizeX / 2, info.sizeY / 2],
+					resolutions: tileGrid?.getResolutions(),
+					extent: tileGrid?.getExtent(),
+					showFullExtent: true,
+				})
+				map.setView(view)
+				if (tileGrid) view.fit(tileGrid.getExtent())
+			}
 			else {
 				// Fetch info.json
 				const infoResponse = await fetch(`${imageUrl}/info.json`)

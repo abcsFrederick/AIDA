@@ -61,7 +61,6 @@ const AIDA = () => {
 			if (router.isReady) {
 				const dataHost = `http://${window.location.hostname}:${config.server.port}/data`
 				const IIIFHost = `http://${window.location.hostname}:${config.IIIF.port}/iiif/2`
-
 				// We assume if the path ends in .json then we are loading an AIDA
 				// project which specific image and annotation path as object properties.
 				if (asPath.endsWith('.json')) {
