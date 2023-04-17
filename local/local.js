@@ -135,6 +135,15 @@ function startServer() {
                 res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
             },
         }));
+
+        // app.use('/data/:wsi/:z/:x-:y.jpeg', function(req, res){
+        //     // console.log(wsi)
+        //     // console.log(z)
+        //     // console.log(x)
+        //     // console.log(y)
+        //     res.send(req.params)
+        // });
+
         app.get('/iiif', function (req, res) {
             const protocol = iiifHttps ? 'https' : 'http';
             res.send(new URL('/iiif/2/', `${protocol}://${iiifHostname}:${iiifPort}`).toString());

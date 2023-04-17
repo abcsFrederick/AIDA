@@ -6,6 +6,7 @@ import { parseStringPromise } from 'xml2js'
 // Parses the XML and returns a workable object.
 // It's expected that we only use a subset of the possible parameters
 const parseDzi = async (xml: string) => {
+	console.log(xml)
 	const xmlObject = await parseStringPromise(xml)
 
 	// Check if we have the expected properties.
