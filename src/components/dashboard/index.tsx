@@ -19,8 +19,8 @@ interface Node {
 // API call to local server to check for images and projects at a specific path
 const getItemsAtPath = async (path: string) => {
 	try {
-		const host = `http://${window.location.hostname}:${config.server.port}`
-
+		// const host = `http://${window.location.hostname}:${config.server.port}`
+		const host = `${config.server.hostname}/${config.server.path}/`
 		const res = await fetch(`${host}/getItemsAtPath`, {
 			method: 'POST',
 			headers: {

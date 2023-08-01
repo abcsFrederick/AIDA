@@ -9,5 +9,8 @@
 // Modules. To use these untranspiled sources, either import modules from
 // ol/src instead of ol, or configure your bundler with an alias pointing
 // to ol/src for the ol package.
+config = {
+  basePath: '/rms2/viewer',
+}
 const withTranspile = require('next-transpile-modules')(['ol', 'geotiff'])
-module.exports = withTranspile()
+module.exports = withTranspile(config)

@@ -15,6 +15,8 @@ import type Point from 'ol/geom/Point'
 import type LineString from 'ol/geom/LineString'
 import type Polygon from 'ol/geom/Polygon'
 
+import { useRouter } from 'next/router'
+
 type FeatureGeom = Point | LineString | Polygon
 
 // Initial default template for new annotation data
@@ -75,8 +77,9 @@ export const save = async (map: Map) => {
 	})
 
 	// Extract path from window URL
-	const pathname = window.location.pathname
+	// const pathname = window.location.pathname
 
+	const pathname = map.get('imageId')
 	// Default annotation path
 	let annotationPath = pathname.replace(/\.[^.]+$/, '.json')
 
@@ -93,7 +96,8 @@ export const save = async (map: Map) => {
 	}
 
 	// Send request
-	const host = `http://${window.location.hostname}:${config.server.port}`
+	// const host = `http://${window.location.hostname}:${config.server.port}`
+	const host = `https://${config.server.hostname}/${config.server.path}`
 
 	try {
 		await fetch(`${host}/save`, {

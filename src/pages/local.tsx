@@ -19,7 +19,8 @@ export default function Local() {
 			try {
 				// Checking by ping... perhaps not the best way?
 				await fetch(
-					`http://${window.location.hostname}:${config.server.port}/ping`
+					`${config.server.hostname}/${config.server.path}/ping`
+					// `http://${window.location.hostname}:${config.server.port}/ping`
 				)
 				setIsLoading(false)
 				setServerIsActive(true)

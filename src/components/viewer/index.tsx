@@ -20,6 +20,9 @@ import Settings from './settings'
 // Types
 import { Annotation } from '../../types/annotation'
 
+// Config
+import config from '../../../aida.config'
+
 const Viewer = (props: {
 	imageUrl: string
 	imageExt: string
@@ -77,7 +80,6 @@ const Viewer = (props: {
 				// following TileUrlFunction. A shame this can't be provided to the
 				// Zoomify source constructor at initialisation time.
 				tileSource.setTileUrlFunction((tileCoord) => {
-					console.log(tileCoord)
 					return templateUrl
 						.replace('{z}', (tileCoord[0] + offset).toString())
 						.replace('{x}', tileCoord[1].toString())
@@ -104,8 +106,9 @@ const Viewer = (props: {
 			// Otherwise, we assume we're dealing with a IIIF image server.
 			// Likely .tiff.
 			else if (imageExt === 'tif' || imageExt === 'svs') {
-				const remoteUrl = 'http://localhost:8000';
-				const imageName = imageUrl.split('/').reverse()[0];
+				const remoteUrl = `https://${config.rms2.hostname}/${config.rms2.path}`
+				const imageName = imageUrl.split('/').reverse()[0]
+				map.set('imageId', imageName)
 				const response = await fetch(`${remoteUrl}/info/${imageName}`)
 				// const info = await parseDzi(await response.text())
 				const info = JSON.parse(await response.text())
